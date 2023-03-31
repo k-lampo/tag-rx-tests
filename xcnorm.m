@@ -1,5 +1,7 @@
 function cor = xcnorm(signal,bbTemplate)
 
+%Normalized cross-correlation
+
 n = length(bbTemplate)-1;
 steps = length(signal)-n;
 cor = zeros(steps, 1);
