@@ -40,7 +40,7 @@ function v = read_complex_binary_int16 (filename, count)
   if (f < 0)
     v = 0;
   else
-    t = fread (f, [2, count], 'int16');
+    t = fread (f, [2, count], 'int16', 'l');
     fclose (f);
     v = t(1,:) + t(2,:)*i;
     [r, c] = size (v);
