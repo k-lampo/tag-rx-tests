@@ -7,7 +7,7 @@ steps = length(signal)-n;
 cor = zeros(steps, 1);
 
 for k = 1:steps
-    cor(k) = conj((bbTemplate)/norm(bbTemplate))'*(signal(k:k+n)/norm(signal(k:k+n)));
+    cor(k) = ((bbTemplate)/norm(bbTemplate))'*(signal(k:k+n)/norm(signal(k:k+n)));
 end
 
 end
