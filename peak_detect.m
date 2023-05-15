@@ -6,7 +6,13 @@ inds = find(abs(cor) > threshold);
 %first point above threshold
 k = 1;
 while k < length(inds)
-   if (inds(k)+1) == inds(k+1)
+   if (length(inds) > k) && (inds(k)+1) == inds(k+1)
+       if (length(inds) > (k+1)) && (inds(k)+2) == inds(k+2)
+            if (length(inds) > (k+2)) && (inds(k)+3) == inds(k+3)
+                inds = inds([1:k (k+4):end]);
+            end
+            inds = inds([1:k (k+3):end]);
+       end
        inds = inds([1:k (k+2):end]);
    end
    k = k+1;
