@@ -44,6 +44,9 @@ end
 dat = data(1, :) + data(2, :)*1j;
 dat = dat';
 
+header.gps_time_sec = buffers(1).header.timestamp_sec;
+header.gps_time_frac = buffers(1).header.timestamp_frac;
+
 end
 
 
