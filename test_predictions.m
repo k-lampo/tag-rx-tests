@@ -15,6 +15,8 @@ for k = 1:4
 end
 tag1_tof = tag1_range/c;
 
+t0 = 10*randn(4,1) + 700;
+
 tag1_local
-tag1_ls = find_position(tag1_tof, beacon_tof, beacon_rel)
+tag1_ls = find_position(tag1_tof+t0, beacon_tof+t0, beacon_rel)
 
