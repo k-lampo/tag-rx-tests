@@ -5,10 +5,18 @@ fname_judy = '/Users/zac/Library/CloudStorage/Dropbox/Mac/Desktop/CUquad_OTA_202
 
 prngen();
 
-[data_astro, header_astro] = usrp_data_parser(fname_astro);
+[data_astro, header_astro, timestamps_astro] = usrp_data_parser(fname_astro);
+[data_elroy, header_elroy, timestamps_elroy] = usrp_data_parser(fname_elroy);
+[data_jane, header_jane, timestamps_jane] = usrp_data_parser(fname_jane);
+[data_judy, header_judy, timestamps_judy] = usrp_data_parser(fname_judy);
+
+times_astro = extract_gps_time(timestamps_astro);
+times_elroy = extract_gps_time(timestamps_elroy);
+times_jane = extract_gps_time(timestamps_jane);
+times_judy = extract_gps_time(timestamps_judy);
+
 cor_tag_astro = xcnorm_mex(data_astro, tag_prn_bb);
 cor_beacon_astro = xcnorm_mex(data_astro, beacon_prn_bb);
-
 save('cor_astro.mat','header_astro', 'cor_tag_astro', 'cor_beacon_astro');
 
 %subplot(2,1,1)
@@ -18,17 +26,14 @@ save('cor_astro.mat','header_astro', 'cor_tag_astro', 'cor_beacon_astro');
 %plot(abs(cor_tag_astro))
 %ylabel('Tag')
 
-[data_elroy, header_elroy] = usrp_data_parser(fname_elroy);
 cor_tag_elroy = xcnorm_mex(data_elroy, tag_prn_bb);
 cor_beacon_elroy = xcnorm_mex(data_elroy, beacon_prn_bb);
 save('cor_elroy.mat','header_elroy', 'cor_tag_elroy', 'cor_beacon_elroy');
 
-[data_jane, header_jane] = usrp_data_parser(fname_jane);
 cor_tag_jane = xcnorm_mex(data_jane, tag_prn_bb);
 cor_beacon_jane = xcnorm_mex(data_jane, beacon_prn_bb);
 save('cor_jane.mat','header_jane', 'cor_tag_jane', 'cor_beacon_jane');
 
-[data_judy, header_judy] = usrp_data_parser(fname_judy);
 cor_tag_judy = xcnorm_mex(data_judy, tag_prn_bb);
 cor_beacon_judy = xcnorm_mex(data_judy, beacon_prn_bb);
 save('cor_judy.mat','header_judy', 'cor_tag_judy', 'cor_beacon_judy');
