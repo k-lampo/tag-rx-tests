@@ -1,4 +1,4 @@
-function times = peak_time(cor, inds, window, dt)
+function times = peak_time(cor, inds, window, dt, file_time)
 
 times = zeros(length(inds),1);
 
@@ -15,6 +15,8 @@ for k = 1:length(inds)
 
     times(k) = t0+tmax;
 end
+
+times = times+file_time;
 
 end
 
