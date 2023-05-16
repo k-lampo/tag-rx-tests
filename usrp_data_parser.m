@@ -1,7 +1,7 @@
 
 %% A script to parse data files recorded from the USRP with Charles' C++ code
 % List the variable lengths in the initial header
-function [dat, header] = usrp_data_parser(filename)
+function [dat, header, timestamps] = usrp_data_parser(filename)
 
 % Read in the file
 fid = fopen(filename, 'rb');
@@ -24,6 +24,10 @@ header.gain= fread(fid, 1, 'double');
 % Store buffers in a structure of structures?
 n = 0; % Counter for the number of buffers
 
+timestamps.indices = [];
+timestamps.gps_sec = [];
+timestamps.gps_frac = [];
+
 while ~feof(fid)
     n = n+1;
     buffers(n).header.timestamp_sec = fread(fid, 1, 'uint64');
@@ -37,8 +41,17 @@ end
 fclose(fid);
 
 data = buffers(1).data;
+timestamps.indices = [timestamps.indices; 1];
+timestamps.gps_sec = [buffers(1).header.timestamp_sec];
+timestamps.gps_frac = [buffers(1).header.timestamp_frac];
 for i=2:n
-    data = cat(2, data, buffers(i).data);
+    if ~isempty(buffers(i).data)
+        timestamps.indices = [timestamps.indices; length(data)+1];
+        timestamps.gps_sec = [timestamps.gps_sec; buffers(i).header.timestamp_sec];
+        timestamps.gps_frac = [timestamps.gps_frac; buffers(i).header.timestamp_frac];
+    
+        data = cat(2, data, buffers(i).data);
+    end
 end
 
 dat = data(1, :) + data(2, :)*1j;
