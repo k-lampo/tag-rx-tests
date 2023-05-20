@@ -1,38 +1,60 @@
-function r_tag = find_position(t_tag,t_beacon,r_rx)
-    c = 299792458.0/1000.0; %meters/ms
+function r_tag = find_position(t_tag,t_offset,r_rx)
+    global_constants;
     
     N = length(t_tag);
     
-    J = zeros(N,3);
-    
     x = zeros(3,1); %initial guess
-    f = zeros(N,1);
-    fnew = zeros(N,1);
 
-    for iter = 1:10
-    
+    % for iter = 1:5
+    %     f = residual(x);
+    %     J = jacobian(x);
+    %     %step = -J\f;
+    %     step = -(J'*J + 1e-6*eye(3))\(J'*f);
+    %     xnew = x + step;
+    %     fnew = residual(xnew);
+    %     alpha = 1.0;
+    %     while norm(fnew) > norm(f)
+    %         alpha = 0.5*alpha;
+    %         xnew = x + alpha*step;
+    %         fnew = residual(xnew);
+    %     end
+    %     x = xnew;
+    % end
+
+    function [f,J] = res(x)
+        f = zeros(N,1);
+        f(1) = norm(x(1:2)-r_rx(1:2,1))/c - 1e3*t_tag(1) + x(3);
+        for k = 2:N
+            f(k) = norm(x(1:2)-r_rx(1:2,k))/c - 1e3*t_tag(k) + x(3) + 1e3*t_offset(k-1);
+        end
+        J = zeros(N,3);
         for k = 1:N
-            f(k) = norm(x(1:2)-r_rx(1:2,k)) + c*x(3) - c*(t_tag(k)-t_beacon(k)) - norm(r_rx(1:2,k));
-            J(k,:) = [(x(1:2) - r_rx(1:2,k))'/norm(x(1:2)-r_rx(1:2,k)) c];
+            J(k,:) = [(x(1:2) - r_rx(1:2,k))'/(c*norm(x(1:2)-r_rx(1:2,k))), 1];
         end
-        
-        dx = (J'*J + 1e-4*eye(3))\(J'*f);
-
-        a = 1.0;
-        fnew = 2*f;
-        while norm(fnew) > norm(f)
-            xnew = x - a*dx;
-            for k = 1:N
-                fnew(k) = norm(xnew(1:2)-r_rx(1:2,k)) + c*xnew(3) - c*(t_tag(k)-t_beacon(k)) - norm(r_rx(1:2,k));
-            end
-            a = 0.5*a;
-        end
-        
-        x = xnew;
     end
 
-    r_tag = x(1:2);
+    options = optimoptions('lsqnonlin','SpecifyObjectiveGradient',true,'Algorithm','levenberg-marquardt','Display','iter');
+    xsol = lsqnonlin(@res, x, [], [],options);
 
+
+    
+
+    % function f = residual(x)
+    %     f = zeros(N,1);
+    %     f(1) = norm(x(1:2)-r_rx(1:2,1))/c - 1e3*t_tag(1) + x(3);
+    %     for k = 2:N
+    %         f(k) = norm(x(1:2)-r_rx(1:2,k))/c - 1e3*t_tag(k) + x(3) + 1e3*t_offset(k-1);
+    %     end
+    % end
+    % 
+    % function J = jacobian(x)
+    %     J = zeros(N,3);
+    %     for k = 1:N
+    %         J(k,:) = [(x(1:2) - r_rx(1:2,k))'/(c*norm(x(1:2)-r_rx(1:2,k))), 1];
+    %     end
+    % end
+
+    r_tag = xsol(1:2);
 end
 
 

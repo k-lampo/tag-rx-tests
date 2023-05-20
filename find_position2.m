@@ -1,5 +1,5 @@
 function r_tag = find_position2(t_tag,t_beacon,r_rx,r_b)
-    c = 299792458.0/1000.0; %meters/ms
+    global_constants;
     
     N = length(t_tag);
     

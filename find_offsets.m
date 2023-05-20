@@ -1,5 +1,5 @@
 function offsets = find_offsets(t_beacon,r_rx,r_beacon)
-    c = 299792458.0/1000.0; %meters/ms
+    global_constants;
 
     N = length(t_beacon);
     A = eye(N) + [[0; ones(N-1,1)], zeros(N,N-1)];
