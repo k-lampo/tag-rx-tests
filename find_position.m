@@ -3,21 +3,35 @@ function r_tag = find_position(t_tag,t_beacon,r_rx)
     
     N = length(t_tag);
     
-    J = zeros(N,2);
+    J = zeros(N,3);
     
-    r_tag = zeros(2,1); %initial guess
+    x = zeros(3,1); %initial guess
     f = zeros(N,1);
-    
-    for iter = 1:5
+    fnew = zeros(N,1);
+
+    for iter = 1:10
     
         for k = 1:N
-            f(k) = norm(r_tag-r_rx(1:2,k)) - c*(t_tag(k)-t_beacon(k)) - norm(r_rx(1:2,k));
-            J(k,:) = (r_tag - r_rx(1:2,k))'/norm(r_tag-r_rx(1:2,k));
+            f(k) = norm(x(1:2)-r_rx(1:2,k)) + c*x(3) - c*(t_tag(k)-t_beacon(k)) - norm(r_rx(1:2,k));
+            J(k,:) = [(x(1:2) - r_rx(1:2,k))'/norm(x(1:2)-r_rx(1:2,k)) c];
         end
         
-        r_tag = r_tag - J\f;
-    
+        dx = (J'*J + 1e-4*eye(3))\(J'*f);
+
+        a = 1.0;
+        fnew = 2*f;
+        while norm(fnew) > norm(f)
+            xnew = x - a*dx;
+            for k = 1:N
+                fnew(k) = norm(xnew(1:2)-r_rx(1:2,k)) + c*xnew(3) - c*(t_tag(k)-t_beacon(k)) - norm(r_rx(1:2,k));
+            end
+            a = 0.5*a;
+        end
+        
+        x = xnew;
     end
+
+    r_tag = x(1:2);
 
 end
 
