@@ -1,4 +1,4 @@
-function rx_local = coordinates()
+function rx_local = test_coordinates()
 
     astro_lla =	[39.975011666666667	-105.2256183333333 1637];
     elroy_lla =	[39.975208333333335	-105.2359216666667 1661];
