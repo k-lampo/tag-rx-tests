@@ -1,4 +1,4 @@
-function rx_local = test_coordinates()
+function [rx_local, tag1_local] = test_coordinates()
 
     astro_lla =	[39.975011666666667	-105.2256183333333 1637];
     elroy_lla =	[39.975208333333335	-105.2359216666667 1661];
@@ -6,13 +6,18 @@ function rx_local = test_coordinates()
     judy_lla =	[39.979219999999998	-105.2320800000000 1631];
     
     beacon_lla = [39.977652580690 -105.230643475862 1633];
+
+    tag1_lla = [39.97913446 -105.2322083 1622.716797];
     
+    %These are all in meters
     astro_ecef = lla2ecef(astro_lla)';
     elroy_ecef = lla2ecef(elroy_lla)';
     jane_ecef = lla2ecef(jane_lla)';
     judy_ecef = lla2ecef(judy_lla)';
     
     beacon_ecef = lla2ecef(beacon_lla)';
+
+    tag1_ecef = lla2ecef(tag1_lla)';
     
     %Arbitrarily pick the beacon as the origin of our local coordinate system
     %This should correspond to a local East-North-Up frame
@@ -30,7 +35,7 @@ function rx_local = test_coordinates()
     jane_local = R*(jane_ecef - beacon_ecef);
     judy_local = R*(judy_ecef - beacon_ecef);
     
-    %tag1_local = R*(tag1_ecef - beacon_ecef);
+    tag1_local = R*(tag1_ecef - beacon_ecef);
     %tag2_local = R*(tag2_ecef - beacon_ecef);
     
     
