@@ -1,4 +1,4 @@
-function [data,times] = grab_files(dir,iter)
+function [data,times,inds] = grab_files(dir,iter)
 %pulls files from the given directory starting at file "iter" and retrieving
 %25 files in total; 25 files x 4 recievers ~= 8 GB of data at a time
 
@@ -15,6 +15,6 @@ function [data,times] = grab_files(dir,iter)
         end
     end
 
-    [data,times,~] = file_concat(files); %sends the array of file names to file_concat to extract the data within
+    [data,times,inds] = file_concat_v2(files); %sends the array of file names to file_concat to extract the data within
 
 end
