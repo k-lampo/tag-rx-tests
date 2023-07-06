@@ -10,10 +10,10 @@ inds = [];
 %data: 10 000 000 x 1 complex double array with signal readings
 %header: 1x1 structure with metadata about this dataset
 %timestamps: 3x1 structure with 40x1 double arrays containing indicies, the
-%unix seconds of 40 evenly-spaced samples, and the fractional times of
+%unix seconds of 25 evenly-spaced samples, and the fractional times of
 %those same samples
 data = dat;
-times = [extract_gps_time_v2(timestamps)]; %returns timestamps in milisecond format, including fractional second data
+times = [extract_gps_time_v2(timestamps)]; %returns timestamps in microsecond format, including fractional second data
 inds = [timestamps.indices]; %pulls the indicies, which start at 1 and count up by 250 000
 
 %appends data for the rest of the files iteratively

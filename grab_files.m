@@ -15,6 +15,6 @@ function [data,times,inds] = grab_files(dir,iter)
         end
     end
 
-    [data,times,inds] = file_concat_v2(files); %sends the array of file names to file_concat to extract the data within
+    [data,times,inds] = file_concat(files); %sends the array of file names to file_concat to extract the data within
 
 end
