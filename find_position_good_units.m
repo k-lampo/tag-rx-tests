@@ -4,7 +4,7 @@ function r_tag = find_position_good_units(t_tag,r_rx)
     
     N = length(t_tag);
     
-    x = zeros(3,1); %initial guess
+    x = [0;0;mean([t_tag(1,:)])]; %initial guess
 
     % for iter = 1:5
     %     f = residual(x);
@@ -34,8 +34,8 @@ function r_tag = find_position_good_units(t_tag,r_rx)
         end
     end
 
-    %options = optimoptions('lsqnonlin','SpecifyObjectiveGradient',true,'Algorithm','levenberg-marquardt','FunctionTolerance',1e-8,'Display','iter');
-    options = optimoptions('lsqnonlin','SpecifyObjectiveGradient',true,'OptimalityTolerance',1e-8,'FunctionTolerance',1e-8,'Display','iter');
+    options = optimoptions('lsqnonlin','SpecifyObjectiveGradient',true,'Algorithm','levenberg-marquardt','OptimalityTolerance',1e-9,'FunctionTolerance',1e-9,'StepTolerance',1e-10,'Display','iter');
+    %options = optimoptions('lsqnonlin','SpecifyObjectiveGradient',true,'OptimalityTolerance',1e-10,'FunctionTolerance',1e-10,'Display','iter');
     xsol = lsqnonlin(@res, x, [], [],options);
 
 

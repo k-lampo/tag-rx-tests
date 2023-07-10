@@ -5,12 +5,12 @@ function [clean_peaks] = beacon_sorter(astro_peaks,elroy_peaks,jane_peaks,judy_p
     %{
     %find the maximum of the minimum times (the first peak for which all four
     %recievers recorded the signal at the same time)
-    abs_min = max([min(astro_peaks);min(elroy_peaks);min(jane_peaks);min(judy_peaks)])
+    abs_min = max([min(astro_peaks);min(elroy_peaks);min(jane_peaks);min(judy_peaks)]);
     
     %determine the starting values for each reciever by pulling the point closest to abs_min
     astro_start = []; elroy_start = []; jane_start = []; judy_start = [];
     while isempty(astro_start) || isempty(elroy_start) || isempty(jane_start) || isempty(judy_start)
-        range_max = abs_min + 0.1*real_dt; range_min = abs_min - 0.1*real_dt;
+        range_max = abs_min + 0.1*real_dt; range_min = abs_min - 0.05*real_dt;
         astro_start = find((astro_peaks < range_max) & (astro_peaks > range_min));
         elroy_start = find((elroy_peaks < range_max) & (elroy_peaks > range_min));
         jane_start = find((jane_peaks < range_max) & (jane_peaks > range_min));
@@ -19,12 +19,11 @@ function [clean_peaks] = beacon_sorter(astro_peaks,elroy_peaks,jane_peaks,judy_p
     end
     
     %repeat the same process to determine the maximum peak for each set
-    abs_max = min([max(astro_peaks);max(elroy_peaks);max(jane_peaks);max(judy_peaks)])
+    abs_max = min([max(astro_peaks);max(elroy_peaks);max(jane_peaks);max(judy_peaks)]);
 
-    
     astro_end = []; elroy_end = []; jane_end = []; judy_end = [];
     while isempty(astro_end) || isempty(elroy_end) || isempty(jane_end) || isempty(judy_end)
-        range_max = abs_max + 0.1*real_dt; range_min = abs_max - 0.1*real_dt;
+        range_max = abs_max + 0.1*real_dt; range_min = abs_max - 0.05*real_dt;
         astro_end = find((astro_peaks < range_max) & (astro_peaks > range_min));
         elroy_end = find((elroy_peaks < range_max) & (elroy_peaks > range_min));
         jane_end = find((jane_peaks < range_max) & (jane_peaks > range_min));
@@ -33,73 +32,35 @@ function [clean_peaks] = beacon_sorter(astro_peaks,elroy_peaks,jane_peaks,judy_p
     end
     %}
     
-    %handpicked maximum and minimum times
-    astro_start = 1; %42;
+    %handpicked maximum and minimum times based on the fact that the files
+    %are in curated groups, and the start and end times are aligned
+    astro_start = 1;
     elroy_start = 1;
-    jane_start = 1; %3;
-    judy_start = 1; %3;
+    jane_start = 1;
+    judy_start = 1;
     abs_min = min([astro_peaks(astro_start),elroy_peaks(elroy_start),jane_peaks(jane_start),judy_peaks(judy_start)]);
 
-    astro_end = 1; %360;
-    elroy_end = 1; %318;
-    jane_end = 1; %326;
-    judy_end = 1; %1428;
+    astro_end = length(astro_peaks);
+    elroy_end = length(elroy_peaks);
+    jane_end = length(jane_peaks);
+    judy_end = length(judy_peaks);
     abs_max = max([astro_peaks(astro_end),elroy_peaks(elroy_end),jane_peaks(jane_end),judy_peaks(judy_end)]);
 
     %determine the maximum possible number of steps in the clean set based on
     %the real step size
-    %total_steps = round((abs_max - abs_min)/real_dt) + 1;
+    total_steps = round((abs_max - abs_min)/real_dt) + 1;
     
     %initialize an array to save the clean peak structure
-    %clean_peaks = zeros(total_steps,4);
+    clean_peaks = zeros(total_steps,4);
     clean_peaks(1,:) = [astro_peaks(astro_start),elroy_peaks(elroy_start),jane_peaks(jane_start),judy_peaks(judy_start)];
     
-    %remove any peaks that now go in reverse time because of offset
-    %adjustments; these are clearly erroneous
-    %{
-    i=astro_start+1;
-    while i <= length(astro_peaks)
-        if astro_peaks(i) < astro_peaks(i-1)
-            astro_peaks(i) = []; elroy_peaks(i) = []; jane_peaks(i) = []; judy_peaks(i) = [];
-        else
-            i = i+1;
-        end
-    end
-    i=elroy_start+1;
-    while i <= length(elroy_peaks)
-        if elroy_peaks(i) < elroy_peaks(i-1)
-            astro_peaks(i) = []; elroy_peaks(i) = []; jane_peaks(i) = []; judy_peaks(i) = [];
-        else
-            i=i+1;
-        end
-    end
-    i=jane_start+1;
-    while i <= length(jane_peaks)
-        if jane_peaks(i) < jane_peaks(i-1)
-            astro_peaks(i) = []; elroy_peaks(i) = []; jane_peaks(i) = []; judy_peaks(i) = [];
-        else
-            i=i+1;
-        end
-    end
-    i=judy_start+1;
-    while i <= length(judy_peaks)
-        if judy_peaks(i) < judy_peaks(i-1)
-            astro_peaks(i) = []; elroy_peaks(i) = []; jane_peaks(i) = []; judy_peaks(i) = [];
-        else
-            i=i+1;
-        end
-    end
-
-    if std([astro_peaks(astro_start),elroy_peaks(elroy_start),jane_peaks(jane_start),judy_peaks(judy_start)]) > 0.1*real_dt
-        disp("WARNING: bad starting value");
-    end
-    %}
-
-    [targets] = clean_peaks(1,:)';
-    indices = [astro_start;elroy_start;jane_start;judy_start] + 1;
-    for i=2:length(clean_peaks)
-        subindices = indices;
-        targets = targets + real_dt;
+    %populate the clean peaks matrix with beacon peaks that all represent
+    %the same pulse
+    [targets] = clean_peaks(1,:)'; %what the method is searching for; we expect a pulse every ~10s
+    indices = [astro_start;elroy_start;jane_start;judy_start] + 1; %index for each reciever based on the determined starting indices above
+    for i=2:length(clean_peaks) %for the length of the clean peaks
+        subindices = indices; %method searches through the subindices, but always returns to the main index set if there's no subindex match (ensures one bad value doesn't run the entire method)
+        targets = targets + real_dt; %add the expected dt to the target array
 
         while subindices(1) <= length(astro_peaks) && astro_peaks(subindices(1)) < targets(1) + tol %300ms
             if astro_peaks(subindices(1)) > targets(1) - tol %check to see if it's a legitamate match
@@ -149,8 +110,5 @@ function [clean_peaks] = beacon_sorter(astro_peaks,elroy_peaks,jane_peaks,judy_p
             i = i+1;
         end
     end
-
-    %disp(clean_peaks);
-    %save("D:\clean_beacon_peaks","clean_peaks");
 
 end

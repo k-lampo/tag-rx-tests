@@ -1,6 +1,6 @@
 function [clean_peaks] = tag_sorter(astro_peaks,elroy_peaks,jane_peaks,judy_peaks,real_dt)
 
-    tol = 300000; %tolerable variation from expected value in us
+    tol = 10000; %tolerable variation from expected value in us
 
     %{
     %find the maximum of the minimum times (the first peak for which all four
@@ -34,16 +34,16 @@ function [clean_peaks] = tag_sorter(astro_peaks,elroy_peaks,jane_peaks,judy_peak
     %}
     
     %handpicked maximum and minimum times
-    astro_start = 2; %40;
-    elroy_start = 1; %14;
-    jane_start = 1; %42;
-    judy_start = 1; %286;
+    astro_start = 2;
+    elroy_start = 1;
+    jane_start = 2;
+    judy_start = 2;
     abs_min = min([astro_peaks(astro_start),elroy_peaks(elroy_start),jane_peaks(jane_start),judy_peaks(judy_start)]);
 
-    astro_end = 4; %2676;
-    elroy_end = 3; %2533;
-    jane_end = 3; %2606;
-    judy_end = 3; %3962;
+    astro_end = length(astro_peaks);
+    elroy_end = length(elroy_peaks);
+    jane_end = length(jane_peaks) - 4;
+    judy_end = length(judy_peaks) - 2;
     abs_max = max([astro_peaks(astro_end),elroy_peaks(elroy_end),jane_peaks(jane_end),judy_peaks(judy_end)]);
 
     %determine the maximum possible number of steps in the clean set based on
@@ -59,7 +59,7 @@ function [clean_peaks] = tag_sorter(astro_peaks,elroy_peaks,jane_peaks,judy_peak
     i=astro_start+1;
     while i <= size(astro_peaks,1)
         if astro_peaks(i) < astro_peaks(i-1)
-            astro_peaks(i) = []; elroy_peaks(i) = []; jane_peaks(i) = []; judy_peaks(i) = [];
+            astro_peaks(i) = [];
         else
             i = i+1;
         end
@@ -67,7 +67,7 @@ function [clean_peaks] = tag_sorter(astro_peaks,elroy_peaks,jane_peaks,judy_peak
     i=elroy_start+1;
     while i <= size(elroy_peaks,1)
         if elroy_peaks(i) < elroy_peaks(i-1)
-            astro_peaks(i) = []; elroy_peaks(i) = []; jane_peaks(i) = []; judy_peaks(i) = [];
+            elroy_peaks(i) = [];
         else
             i=i+1;
         end
@@ -75,7 +75,7 @@ function [clean_peaks] = tag_sorter(astro_peaks,elroy_peaks,jane_peaks,judy_peak
     i=jane_start+1;
     while i <= size(jane_peaks,1)
         if jane_peaks(i) < jane_peaks(i-1)
-            astro_peaks(i) = []; elroy_peaks(i) = []; jane_peaks(i) = []; judy_peaks(i) = [];
+            jane_peaks(i) = [];
         else
             i=i+1;
         end
@@ -83,12 +83,13 @@ function [clean_peaks] = tag_sorter(astro_peaks,elroy_peaks,jane_peaks,judy_peak
     i=judy_start+1;
     while i <= size(judy_peaks,1)
         if judy_peaks(i) < judy_peaks(i-1)
-            astro_peaks(i) = []; elroy_peaks(i) = []; jane_peaks(i) = []; judy_peaks(i) = [];
+            judy_peaks(i) = [];
         else
             i=i+1;
         end
     end
 
+    %clean the peaks by searching for peaks at the times they should be
     [targets] = clean_peaks(1,:)';
     indices = [astro_start;elroy_start;jane_start;judy_start] + 1;
     for i=2:size(clean_peaks,1)
