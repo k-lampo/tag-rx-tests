@@ -17,11 +17,13 @@ times = [extract_gps_time_v2(timestamps)]; %returns timestamps in microsecond fo
 inds = [timestamps.indices]; %pulls the indicies, which start at 1 and count up by 250 000
 
 %appends data for the rest of the files iteratively
+%{
 for k = 2:length(filenames)
     [dat, header, timestamps] = usrp_data_parser(filenames{k});
     inds = [inds; length(data)+timestamps.indices]; %adds the current length of the dataset to the indicies, thus creating a consistent index system for all 25 files together
     times = [times; extract_gps_time_v2(timestamps)];
     data = [data; dat];
 end
+%}
 
 end
