@@ -1,5 +1,5 @@
 function times = find_peak_times(cor,threshold,input_times)
-    inds = find(abs(cor) > threshold);
+    inds = find(abs(cor) > threshold); %find the group of data points that are above the specified threshold
 
     %group subsuquent peaks, then discard all but the central one
     k = 1;

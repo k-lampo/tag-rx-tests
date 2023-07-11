@@ -34,7 +34,7 @@ function r_tag = find_position_good_units(t_tag,r_rx)
         end
     end
 
-    options = optimoptions('lsqnonlin','SpecifyObjectiveGradient',true,'Algorithm','levenberg-marquardt','OptimalityTolerance',1e-9,'FunctionTolerance',1e-9,'StepTolerance',1e-10,'Display','iter');
+    options = optimoptions('lsqnonlin','SpecifyObjectiveGradient',true,'Algorithm','levenberg-marquardt','OptimalityTolerance',1e-10,'FunctionTolerance',1e-10,'StepTolerance',1e-10,'Display','iter');
     %options = optimoptions('lsqnonlin','SpecifyObjectiveGradient',true,'OptimalityTolerance',1e-10,'FunctionTolerance',1e-10,'Display','iter');
     xsol = lsqnonlin(@res, x, [], [],options);
 

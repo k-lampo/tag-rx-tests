@@ -1,37 +1,6 @@
 function [clean_peaks] = tag_sorter(astro_peaks,elroy_peaks,jane_peaks,judy_peaks,real_dt)
 
     tol = 10000; %tolerable variation from expected value in us
-
-    %{
-    %find the maximum of the minimum times (the first peak for which all four
-    %recievers recorded the signal at the same time)
-    abs_min = max([min(astro_peaks);min(elroy_peaks);min(jane_peaks);min(judy_peaks)])
-    
-    %determine the starting values for each reciever by pulling the point closest to abs_min
-    astro_start = []; elroy_start = []; jane_start = []; judy_start = [];
-    while isempty(astro_start) || isempty(elroy_start) || isempty(jane_start) || isempty(judy_start)
-        range_max = abs_min + 0.1*real_dt; range_min = abs_min - 0.1*real_dt;
-        astro_start = find((astro_peaks < range_max) & (astro_peaks > range_min));
-        elroy_start = find((elroy_peaks < range_max) & (elroy_peaks > range_min));
-        jane_start = find((jane_peaks < range_max) & (jane_peaks > range_min));
-        judy_start = find((judy_peaks < range_max) & (judy_peaks > range_min));
-        abs_min = abs_min + real_dt;
-    end
-    
-    %repeat the same process to determine the maximum peak for each set
-    abs_max = min([max(astro_peaks);max(elroy_peaks);max(jane_peaks);max(judy_peaks)])
-
-    
-    astro_end = []; elroy_end = []; jane_end = []; judy_end = [];
-    while isempty(astro_end) || isempty(elroy_end) || isempty(jane_end) || isempty(judy_end)
-        range_max = abs_max + 0.1*real_dt; range_min = abs_max - 0.1*real_dt;
-        astro_end = find((astro_peaks < range_max) & (astro_peaks > range_min));
-        elroy_end = find((elroy_peaks < range_max) & (elroy_peaks > range_min));
-        jane_end = find((jane_peaks < range_max) & (jane_peaks > range_min));
-        judy_end = find((judy_peaks < range_max) & (judy_peaks > range_min));
-        abs_max = abs_max - real_dt;
-    end
-    %}
     
     %handpicked maximum and minimum times
     astro_start = 2;
@@ -104,7 +73,6 @@ function [clean_peaks] = tag_sorter(astro_peaks,elroy_peaks,jane_peaks,judy_peak
             end
             subindices(1) = subindices(1) + 1;
         end
-
         while elroy_peaks(subindices(2)) < targets(2) + tol
             if elroy_peaks(subindices(2)) > targets(2) - tol
                 clean_peaks(i,2) = elroy_peaks(subindices(2));
@@ -113,8 +81,6 @@ function [clean_peaks] = tag_sorter(astro_peaks,elroy_peaks,jane_peaks,judy_peak
             end
             subindices(2) = subindices(2) + 1;
         end
-
-
         while jane_peaks(subindices(3)) < targets(3) + tol
             if jane_peaks(subindices(3)) > targets(3) - tol
                 clean_peaks(i,3) = jane_peaks(subindices(3));
@@ -123,7 +89,6 @@ function [clean_peaks] = tag_sorter(astro_peaks,elroy_peaks,jane_peaks,judy_peak
             end
             subindices(3) = subindices(3) + 1;
         end
-
         while judy_peaks(subindices(4)) < targets(4) + tol
             if judy_peaks(subindices(4)) > targets(4) - tol
                 clean_peaks(i,4) = judy_peaks(subindices(4));
@@ -144,8 +109,5 @@ function [clean_peaks] = tag_sorter(astro_peaks,elroy_peaks,jane_peaks,judy_peak
             i = i+1;
         end
     end
-
-    %disp(clean_peaks);
-    %save("D:\clean_tag_peaks","clean_peaks");
 
 end
